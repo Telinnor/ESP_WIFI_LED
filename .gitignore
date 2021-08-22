@@ -1,6 +1,6 @@
 #DATEIEN
 .vscode/c_cpp_properties.json
-WIFIsettings.cpp
+Server/WIFIsettings.cpp
 
 #ORDNER
 ArduinoOutput
