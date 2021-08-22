@@ -1,5 +1,14 @@
 // um sich mit dem privatem WLAN zu verbinden müssen die Zeilen ausgfüllt werden
 // ändere den Datei Namen danach zu "WIFIsettings.cpp", also entferne "Demo" aus dem Namen.
 
-//char HOMEssid[] = ""; // Namen des privaten WLANs eingeben
-//char HOMEpasskey[] = ""; // Passwort für das private WLAN eingeben
+//PRIVATE
+#ifndef HOMEssid
+#define HOMEssid "" //Name des privaten WLANs
+#define HOMEpsk ""  //Passwort des privaten WLANs
+#endif
+
+// ESP Access Point
+#ifndef APssid
+#define APssid "ESPap" //Access Point Name
+#define APpsk "thereisnospoon" //Access Point Password
+#endif
