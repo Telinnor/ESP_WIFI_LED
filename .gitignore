@@ -1,2 +1,7 @@
+#DATEIEN
 .vscode/c_cpp_properties.json
 WIFIsettings.cpp
+
+#ORDNER
+ArduinoOutput
+

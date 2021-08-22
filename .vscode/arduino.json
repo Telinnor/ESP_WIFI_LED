@@ -3,5 +3,5 @@
     "board": "esp8266:esp8266:generic",
     "sketch": "ESP_WIFI_LED.ino",
     "port": "COM4",
-    "output": "../ArduinoOutput"
+    "output": "./ArduinoOutput"
 }
