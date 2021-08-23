@@ -6,6 +6,13 @@
 #include <ArduinoOTA.h> // OTA Upload via ArduinoIDE
 
 
+#include <Adafruit_NeoPixel.h>
+#define PIN 6
+
+#define numLED 61
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(numLED, PIN, NEO_GRB + NEO_KHZ800);
+
+
 /* Set these to your desired credentials. */
 
 
@@ -17,7 +24,11 @@ ESP8266WebServer server(80);
 void handleRoot()
 {
     Serial.println("handle Root");
-    server.send(200, "text/html", "<h1>You are connected</h1>");
+    String message="";
+    for(int i=0; i<numLED; i++){
+        message+=(String)strip.getPixelColor(i);
+    }
+    server.send(200, "text/html", message);
 }
 void handleNotFound()
 {
