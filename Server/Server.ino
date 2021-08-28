@@ -7,9 +7,9 @@
 
 
 #include <Adafruit_NeoPixel.h>
-#define PIN 6
+#define PIN 2
 
-#define numLED 61
+#define numLED 100
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(numLED, PIN, NEO_GRB + NEO_KHZ800);
 
 
@@ -23,10 +23,19 @@ ESP8266WebServer server(80);
 */
 void handleRoot()
 {
+    server.send(200, "text/html", "Nothing here. Please connect to /LED");
+}
+void handleLED()
+{
     Serial.println("handle Root");
     String message="";
     for(int i=0; i<numLED; i++){
-        message+=(String)strip.getPixelColor(i);
+        u_int32_t color=strip.getPixelColor(i);
+
+       //message+=iToString(color,10)+"|";
+       message+=iToHex(color,6)+"|";
+
+        //Serial.println(message);
     }
     server.send(200, "text/html", message);
 }
@@ -49,6 +58,7 @@ void setup()
         delay(500);
         Serial.print(".");
     }
+    Serial.println("");
     Serial.print("My IP-Adress is:  ");
     Serial.println(WiFi.localIP());
 
@@ -61,7 +71,8 @@ void setup()
     Serial.print("AP IP address: ");
     Serial.println(myIP);
 
-    server.on("/", handleRoot);
+    server.on("/",handleRoot);
+    server.on("/LED", handleLED);
     server.onNotFound(handleNotFound);
     server.begin();
     Serial.println("HTTP server started");
@@ -69,7 +80,13 @@ void setup()
     ArduinoOTA.begin(); // OTA Upload via ArduinoIDE
     ArduinoOTA.setHostname("esp8266-01_LED_MASTER");
 
-    Serial.println("YEAH....2");
+    //Serial.println("DebugMessage1");
+    strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
+    strip.show();            // Turn OFF all pixels ASAP
+    //Serial.println("DebugMessage2");
+    strip.fill(strip.Color(0,255,0),0,numLED);
+
+    Serial.println("finshed setup");
 }
 
 void loop()
@@ -78,3 +95,35 @@ void loop()
     
     ArduinoOTA.handle(); // OTA Upload via ArduinoIDE
 }
+
+String iToString(u_int32_t value, int TargetLength){
+
+    String result;
+    String valueString=(String) value;
+    int lengthString=valueString.length();
+    //int lengthString=sizeof(valueString)/sizeof(valueString[0]);
+    // Serial.println(valueString);
+    // Serial.println(valueString.length());
+    // Serial.println(valueString[0]);
+    // Serial.println(sizeof(valueString[0]));
+    // Serial.println(lengthString);
+    for (int i = 0;i<(TargetLength-lengthString);i++){
+        result+=String("0");
+    }
+    
+    result+=valueString;
+    Serial.println(result);
+    return result;
+
+}
+
+String iToHex(u_int32_t value, int TargetLength){
+    String result;
+    String valueString=String(value,HEX);
+    for (int i=valueString.length(); i<TargetLength;i++){
+        result += String("0");
+    }
+    result+=valueString;
+    return result;
+}
+
