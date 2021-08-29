@@ -12,6 +12,7 @@
 #define numLED 100
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(numLED, PIN, NEO_GRB + NEO_KHZ800);
 
+unsigned long previousTime=0;
 
 /* Set these to your desired credentials. */
 
@@ -29,6 +30,8 @@ void handleLED()
 {
     Serial.println("handle Root");
     String message="";
+    message+=iToString(numLED,4)+"|";
+    Serial.println(iToHex(strip.getPixelColor(0),6));
     for(int i=0; i<numLED; i++){
         u_int32_t color=strip.getPixelColor(i);
 
@@ -89,11 +92,20 @@ void setup()
     Serial.println("finshed setup");
 }
 
+int i = 0;
+int dir=1;
 void loop()
 {
     server.handleClient();
-    
     ArduinoOTA.handle(); // OTA Upload via ArduinoIDE
+
+    if (millis()- previousTime>10){
+        previousTime=millis();
+        i+=dir;
+        if(i==150||i==0){dir=-dir;}
+        strip.fill(strip.Color(i, 0, 0), 0, numLED);
+        strip.show();
+    }
 }
 
 String iToString(u_int32_t value, int TargetLength){
@@ -126,4 +138,3 @@ String iToHex(u_int32_t value, int TargetLength){
     result+=valueString;
     return result;
 }
-
