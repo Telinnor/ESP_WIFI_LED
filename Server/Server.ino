@@ -3,7 +3,7 @@
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
 #include "./WIFIsettings.cpp"
-#include <ArduinoOTA.h> // OTA Upload via ArduinoIDE
+//#include <ArduinoOTA.h> // OTA Upload via ArduinoIDE
 
 
 #include <Adafruit_NeoPixel.h>
@@ -22,28 +22,34 @@ ESP8266WebServer server(80);
 /* Just a little test message.  Go to http://192.168.4.1 in a web browser
    connected to this access point to see it.
 */
-void handleRoot()
-{
-    server.send(200, "text/html", "Nothing here. Please connect to /LED");
-}
-void handleLED()
+void handle_Root()
 {
     Serial.println("handle Root");
+    server.send(200, "text/html", "Nothing here. Please connect to <a href='/LED'>/LED</a>");
+}
+void handle_LED()
+{
+    Serial.println("handle LED");
     String message="";
-    message+=iToString(numLED,4)+"|";
+    //message+=iToString(numLED,4)+"|";
     Serial.println(iToHex(strip.getPixelColor(0),6));
     for(int i=0; i<numLED; i++){
         u_int32_t color=strip.getPixelColor(i);
 
        //message+=iToString(color,10)+"|";
-       message+=iToHex(color,6)+"|";
+       message+=iToHex(color,6)+"";
 
         //Serial.println(message);
     }
     server.send(200, "text/html", message);
 }
-void handleNotFound()
+void handle_numLED(){
+    Serial.println("handle numLED");
+    server.send(200, "text/html", iToString(numLED, 4));
+}
+void handle_NotFound()
 {
+    Serial.println("handle NotFound");
     server.send(200, "text/html", "<h1>NotFound heheee</h1>");
 }
 
@@ -53,17 +59,17 @@ void setup()
     
     Serial.begin(115200);
 
-    WiFi.mode(WIFI_STA);
-    WiFi.begin(HOMEssid, HOMEpsk);
+    //WiFi.mode(WIFI_STA);
+    //WiFi.begin(HOMEssid, HOMEpsk);
 
-    while (WiFi.status() != WL_CONNECTED)
-    {
-        delay(500);
-        Serial.print(".");
-    }
-    Serial.println("");
-    Serial.print("My IP-Adress is:  ");
-    Serial.println(WiFi.localIP());
+    // while (WiFi.status() != WL_CONNECTED)
+    // {
+    //     delay(500);
+    //     Serial.print(".");
+    // }
+    // Serial.println("");
+    // Serial.print("My IP-Adress is:  ");
+    // Serial.println(WiFi.localIP());
 
     Serial.println();
     Serial.print("Configuring access point...");
@@ -74,14 +80,15 @@ void setup()
     Serial.print("AP IP address: ");
     Serial.println(myIP);
 
-    server.on("/",handleRoot);
-    server.on("/LED", handleLED);
-    server.onNotFound(handleNotFound);
+    server.on("/",handle_Root);
+    server.on("/LED", handle_LED);
+    server.on("/numLED", handle_numLED);
+    server.onNotFound(handle_NotFound);
     server.begin();
     Serial.println("HTTP server started");
 
-    ArduinoOTA.begin(); // OTA Upload via ArduinoIDE
-    ArduinoOTA.setHostname("esp8266-01_LED_MASTER");
+    // ArduinoOTA.begin(); // OTA Upload via ArduinoIDE
+    // ArduinoOTA.setHostname("esp8266-01_LED_MASTER");
 
     //Serial.println("DebugMessage1");
     strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
@@ -97,7 +104,7 @@ int dir=1;
 void loop()
 {
     server.handleClient();
-    ArduinoOTA.handle(); // OTA Upload via ArduinoIDE
+    //ArduinoOTA.handle(); // OTA Upload via ArduinoIDE
 
     if (millis()- previousTime>10){
         previousTime=millis();
