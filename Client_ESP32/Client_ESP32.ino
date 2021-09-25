@@ -1,8 +1,8 @@
 
-#include <ESP8266WiFi.h>
+#include <WiFi.h>
 #include <WiFiClient.h>
-#include <ESP8266HTTPClient.h>
-#include <ESP8266HTTPClient.h>
+#include <HTTPClient.h>
+#include <HTTPClient.h>
 #include "./WIFIsettings.cpp"
 
 #include <Adafruit_NeoPixel.h>
@@ -12,7 +12,7 @@
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(20, PIN, NEO_GRB + NEO_KHZ800);
 
 int numLED=20;
-int waitingTime=20;
+int waitingTime=200;
 
 String host = "http://192.168.4.1";
 String url = "/LED";
