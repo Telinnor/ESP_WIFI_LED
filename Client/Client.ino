@@ -12,7 +12,7 @@
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(20, PIN, NEO_GRB + NEO_KHZ800);
 
 int numLED=20;
-int waitingTime=20;
+int waitingTime=10;
 
 String host = "http://192.168.4.1";
 String url = "/LED";
@@ -135,7 +135,7 @@ int isNumber(char s[])
   for (int i = 0; s[i] != '\0'; i++)
   {
     if (isdigit(s[i]) == 0){
-      Serial.printf("noINT: %s\n",s);
+      //Serial.printf("noINT: %s\n",s);
       return 0;
     }
   }

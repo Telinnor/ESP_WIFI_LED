@@ -1,7 +1,7 @@
-
 #include <WiFi.h>
+#include <ESPAsyncWebServer.h>
+#include <SPIFFS.h>
 #include <WiFiClient.h>
-#include <WebServer.h>
 #include "./WIFIsettings.cpp"
 //#include <ArduinoOTA.h> // OTA Upload via ArduinoIDE
 
@@ -16,18 +16,16 @@ unsigned long previousTime=0;
 
 /* Set these to your desired credentials. */
 
+AsyncWebServer server(80);
 
-WebServer server(80);
 
-/* Just a little test message.  Go to http://192.168.4.1 in a web browser
-   connected to this access point to see it.
-*/
-void handle_Root()
+void handle_Root(AsyncWebServerRequest *request)
 {
     Serial.println("handle Root");
-    server.send(200, "text/html", "Nothing here. Please connect to <a href='/LED'>/LED</a>");
+    //server.send(200, "text/html", "Nothing here. Please connect to <a href='/LED'>/LED</a>");
+    request->send_P(200, "text/html", "Nothing here. Please connect to <a href='/LED'>/LED</a>");
 }
-void handle_LED()
+void handle_LED(AsyncWebServerRequest *request)
 {
     Serial.println("handle LED");
     String message="";
@@ -41,16 +39,21 @@ void handle_LED()
 
         //Serial.println(message);
     }
-    server.send(200, "text/html", message);
+    //server.send(200, "text/html", message);
+    request->send(200, "text/html", message);
 }
-void handle_numLED(){
+void handle_numLED(AsyncWebServerRequest *request)
+{
     Serial.println("handle numLED");
-    server.send(200, "text/html", iToString(numLED, 4));
+    //server.send(200, "text/html", iToString(numLED, 4));
+    request->send(200, "text/html", iToString(numLED, 4));
 }
-void handle_NotFound()
+
+void handle_NotFound(AsyncWebServerRequest *request)
 {
     Serial.println("handle NotFound");
-    server.send(200, "text/html", "<h1>NotFound heheee</h1>");
+    //server.send(404, "text/html", "<h1>NotFound heheee</h1>");
+    request->send_P(404, "text/html", "<h1>NotFound</h1>");
 }
 
 void setup()
@@ -59,17 +62,17 @@ void setup()
     
     Serial.begin(115200);
 
-    //WiFi.mode(WIFI_STA);
-    //WiFi.begin(HOMEssid, HOMEpsk);
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(HOMEssid, HOMEpsk);
 
-    // while (WiFi.status() != WL_CONNECTED)
-    // {
-    //     delay(500);
-    //     Serial.print(".");
-    // }
-    // Serial.println("");
-    // Serial.print("My IP-Adress is:  ");
-    // Serial.println(WiFi.localIP());
+    while (WiFi.status() != WL_CONNECTED)
+    {
+        delay(500);
+        Serial.print(".");
+    }
+    Serial.println("");
+    Serial.print("My IP-Adress is:  ");
+    Serial.println(WiFi.localIP());
 
     Serial.println();
     Serial.print("Configuring access point...");
@@ -79,6 +82,8 @@ void setup()
     IPAddress myIP = WiFi.softAPIP();
     Serial.print("AP IP address: ");
     Serial.println(myIP);
+
+    SPIFFS.begin();
 
     server.on("/",handle_Root);
     server.on("/LED", handle_LED);
@@ -103,7 +108,7 @@ int i = 0;
 int dir=1;
 void loop()
 {
-    server.handleClient();
+    //server.handleClient();
     //ArduinoOTA.handle(); // OTA Upload via ArduinoIDE
 
     if (millis()- previousTime>10){
